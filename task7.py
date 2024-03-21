@@ -1,5 +1,4 @@
 class Student:
-    student_id_count = 1
 
     def __init__(
         self, first_name: str, last_name: str, student_id: int, age: str
@@ -8,7 +7,6 @@ class Student:
         self.last_name = last_name
         self.student_id = student_id
         self.age = age
-        self.student_id_count += 1
 
     # @staticmethod
     # def create_student(
@@ -31,35 +29,46 @@ class StudentManagement:
     students = {}
 
     def __init__(self) -> None:
-        pass
+        self.students = []
+        # pass
 
     def search(self, student_id: int) -> int:
-        if student_id not in self.students:
-            return 0
-        else:
-            return 1
+        student = [student for student in self.students if student.student_id == student_id]
+        if (student): # A empty list will return False
+            return student[0]
+        return False
+        # if student_id not in self.students:
+        #     return 0
+        # else:
+        #     return 1
 
-    def accept(self, Student):
-        if self.search(Student.student_id):
-            print(f"Student with id {Student.student_id} already exist.")
-        self.students[Student.student_id] = {
-            "f_name": Student.first_name,
-            "l_name": Student.last_name,
-            "id": Student.student_id,
-            "age": Student.age,
-        }
+    def accept(self, student): # The logic here is overcomplicated. You can actually pass the actual Student instances and put them in a list to filter there. You shouldn't re-declare the same values in the container class.
+        student = self.search(student.student_id)
+        if student:
+            print(f"Student with id {student.student_id} already exist.")
+        self.students.append(student)
+        # if self.search(Student.student_id):
+        #     print(f"Student with id {Student.student_id} already exist.")
+        # self.students[Student.student_id] = {
+        #     "f_name": Student.first_name,
+        #     "l_name": Student.last_name,
+        #     "id": Student.student_id,
+        #     "age": Student.age,
+        # }
 
     def display(self, student_id: int):
-        if self.search(student_id):
+        student = self.search(student.student_id)
+        if student
             print(
-                f'{self.students[student_id]["f_name"]} {self.students[student_id]["l_name"]} is {self.students[student_id]["age"]}-years old and has and id of {self.students[student_id]["id"]}.'
+                f'{student.first_name} {student.last_name} is {student.age}-years old and has and id of {student.first_name.student_id}.'
             )
         else:
             print(f"Student with id {student_id} does not exist.")
 
     def delete(self, student_id: int):
-        if self.search(student_id):
-            self.students.pop(student_id)
+        student = self.search(student.student_id)
+        if student:
+            self.students.pop(student)
             print(f"Student with id {student_id} removed.")
         else:
             return f"Student with id {student_id} does not exist."
