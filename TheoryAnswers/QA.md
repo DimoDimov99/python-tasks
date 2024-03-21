@@ -72,6 +72,55 @@ even_numbers = [number for number in range(start, end) if number % 2 == 0]
 We can archieve pretty one liners which
 ```
 
+`Notes`: It's not only fancy, it is indeed faster. As when you create a list with a for loop, you append a value to the end of the list with append - this is creating overhead. A list comprehention can
+be more efficient, the more elements the list needs to have. With 10-100 values - probably not noticable, but with more values (in the millions) it will be faster for sure.
+Try to run the below - the more values you add to be created, the comprehension will become faster and faster.
+```
+from functools import wraps
+import time
+
+def timeit(func):
+    @wraps(func)
+    def timeit_wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        total_time = end_time - start_time
+        print(f'Function {func.__name__} took {total_time:.4f} seconds')
+        return result
+    return timeit_wrapper
+
+@timeit
+def create_via_for_loop():
+    l = []
+    for i in range(10000000):
+        l.append(i)
+
+@timeit
+def create_via_comprehension():
+    l = [i for i in range(10000000)]
+
+
+create_via_for_loop()
+create_via_comprehension()
+```
+
+```
+1000000 items:
+Function create_via_for_loop took 1.1453 seconds
+Function create_via_comprehension took 0.7650 seconds
+Comprehension twice as fast
+```
+
+
+```
+100000000 items:
+Function create_via_for_loop took 9.8660 seconds
+Function create_via_comprehension took 6.7919 seconds
+Comprehension almost 3x as fast
+```
+
+
 ## 6. What are unit tests in Python?
 
 Unit tests are not sole Python thing, but a programming one instead. Idea of unit test is to test one functionality (unit); It is mainly used for testing separate functions. I think there is a builtin module called unittest
@@ -101,6 +150,39 @@ Honestly, I do not have many experience with decorators. I think they provide sy
 
 In python, the parameter is passed as reference (pointer) and it also needs to be managed in languages such as C, C++. This is mainly, because if we pass the parameter by value (copy), our function will not modify,mutate the object, but it will create a copy, which will be destroyed at the return point of the function. 9/10 when we pass parameter we would like to modify it current state. So the parameter is passed as memory address, not with it is actually value.
 
+`Notes`: That's only partially true. Simple types are passed by value - i.e they are copied to a separate memory block and are different than the input variable. Structures on the other hand, are passed by reference - you can see the results in the code below. Also, usually it's not 
+that common that you would like to change the original value, most of the time you want to returned a changed one. Also return does not destroy objects, it returns a reference to the returned object that can be saved in a variable. In the backend the Python garbage collector 
+will in fact delete the initial variable passed if not used after the function call, so the top overview: you have a variable, you pass it to a function that returns a modified value that is saved in a variable. The initial one gets removed by Garbage Collector if it doesn't have 
+any more blocks of code that need to use it.
+
+```
+x = 5
+y = [1,2,3,4,5]
+
+def test_argument_change(num:int, l:list):
+    num += 1
+    l.append(6)
+
+test_argument_change(x,y)
+
+print(x)
+print(y)
+```
+
 ## 10. Does Python support multiple Inheritance (OOP)
 
 Python supports multiple Inheritance, I think it is called Polymorphism
+
+`Notes`: The statement is correct, by it differs from Polymorphism. Polymorphism is the quality that different object can behive the similarly, for example:
+You have a class `Shape` that is inherited by it's child classes `square` and `circle`. The `shape` class can have a abstract method (a method that needs to be implemented of all it's children) - `draw`. 
+Then both `circle` and `square` will have this method, but in one case it will draw a circle, in the other a square.
+In pseudo-code:
+```
+             class Shape
+              def draw()
+              /       \
+    class Circle     class Square
+    def draw()         def draw()
+Draws circle            Draws Square
+
+```
